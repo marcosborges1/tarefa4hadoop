@@ -19,7 +19,11 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import utils.ReaderTSV;
 
-public class Eleicoes2014 {
+/*
+ * Questão 1 - Quais foram as hashtags mais usadas pela manhã, tarde e noite?
+ */
+
+public class HashTagByPeriod {
 
 	public static class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable> {
 
@@ -56,7 +60,7 @@ public class Eleicoes2014 {
 		
 		Configuration conf = new Configuration();
 	    Job job = Job.getInstance(conf, "Tarefa4Hadoop");
-	    job.setJarByClass(Eleicoes2014.class);
+	    job.setJarByClass(HashTagByPeriod.class);
 	    job.setMapperClass(TokenizerMapper.class);
 	    job.setCombinerClass(IntSumReducer.class);
 	    job.setReducerClass(IntSumReducer.class);

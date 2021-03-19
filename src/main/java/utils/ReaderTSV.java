@@ -9,7 +9,7 @@ import org.apache.commons.csv.CSVRecord;
 
 public class ReaderTSV {
 
-	private String columnId, columnContent, columnCreatedAt;
+	private String columnId, columnContent, columnCreatedAt, columnCreateAtStr;
 
 	public ReaderTSV(String line) throws IOException {
 		CSVParser csvParser = new CSVParser(new StringReader(line), CSVFormat.DEFAULT.withDelimiter('\t'));
@@ -17,6 +17,7 @@ public class ReaderTSV {
 		columnId = currentRecord.get(0);
 		columnContent = currentRecord.get(1);
 		columnCreatedAt = currentRecord.get(7);
+		columnCreateAtStr = currentRecord.get(8);
 	}
 
 	public String getColumnId() {
@@ -29,6 +30,10 @@ public class ReaderTSV {
 
 	public String getColumnCreatedAt() {
 		return columnCreatedAt;
+	}
+	
+	public String getColumnCreatedAtStr() {
+		return columnCreateAtStr;
 	}
 
 }
