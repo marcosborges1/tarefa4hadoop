@@ -17,6 +17,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+import aux.Tweet;
 import utils.ReaderTSV;
 
 /*
@@ -30,7 +31,10 @@ public class HashTagByPeriod {
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 			
 			ReaderTSV readerTSV = new ReaderTSV(value.toString());
-			Tweet tweet = new Tweet(readerTSV.getColumnId(), readerTSV.getColumnContent(), readerTSV.getColumnCreatedAt());
+			Tweet tweet = new Tweet(); 
+			tweet.setContent(readerTSV.getColumnContent());
+			tweet.setCreatedAt(readerTSV.getColumnCreatedAt());
+			
 			ArrayList<String> hashTags = tweet.getHashTagsFromContentByPeriod();
 			
 			for (String hashTag : hashTags) {

@@ -17,6 +17,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+import aux.Tweet;
 import utils.ReaderTSV;
 
 /*
@@ -25,35 +26,34 @@ import utils.ReaderTSV;
 
 public class SentencesByWord {
 
-	public static class TokenizerMapper extends Mapper<Object, Text, Text, Text> {
+	public static class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable> {
 
 		public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-			
+
 			ReaderTSV readerTSV = new ReaderTSV(value.toString());
 			Tweet tweet = new Tweet();
 			tweet.setContent(readerTSV.getColumnContent());
-			
-			ArrayList<String> hashTags = tweet.getSentencesByWord("dilma");
-			
-			for (String hashTag : hashTags) {
-				context.write(new Text(hashTag), new Text(tweet.getContent()));
+			ArrayList<String> sentences = tweet.getSentencesByWord("aécio");
+			for (String sentence : sentences) {
+				context.write(new Text(sentence), new IntWritable(1));
 			}
 		}
 	}
 
-//	public static class IntSumReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
-//		private IntWritable result = new IntWritable();
-//
-//		public void reduce(Text key, Iterable<IntWritable> values, Context context)
-//				throws IOException, InterruptedException {
-//			int sum = 0;
-//			for (IntWritable val : values) {
-//				sum += val.get();
-//			}
-//			result.set(sum);
-//			context.write(key, result);
-//		}
-//	}
+	public static class IntSumReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
+		private IntWritable result = new IntWritable();
+
+		public void reduce(Text key, Iterable<IntWritable> values, Context context)
+				throws IOException, InterruptedException {
+			int sum = 0;
+			for (IntWritable val : values) {
+				sum += val.get();
+			}
+			result.set(sum);
+			context.write(key, result);
+			
+		}
+	}
 
 	public static void main(String[] args) throws Exception {
 		
@@ -62,12 +62,12 @@ public class SentencesByWord {
 		
 		Configuration conf = new Configuration();
 	    Job job = Job.getInstance(conf, "Tarefa4Hadoop");
-	    job.setJarByClass(SentencesByWord.class);
+	    job.setJarByClass(HashTagByDay.class);
 	    job.setMapperClass(TokenizerMapper.class);
-//	    job.setCombinerClass(IntSumReducer.class);
-//	    job.setReducerClass(IntSumReducer.class);
+	    job.setCombinerClass(IntSumReducer.class);
+	    job.setReducerClass(IntSumReducer.class);
 	    job.setOutputKeyClass(Text.class);
-	    job.setOutputValueClass(Text.class);
+	    job.setOutputValueClass(IntWritable.class);
 	    FileInputFormat.addInputPath(job, new Path(args[0]));
 	    FileOutputFormat.setOutputPath(job, new Path(args[1]));
 	    boolean success = job.waitForCompletion(true);

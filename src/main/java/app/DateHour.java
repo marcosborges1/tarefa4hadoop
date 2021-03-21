@@ -2,7 +2,6 @@ package app;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
@@ -17,13 +16,14 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+import aux.Tweet;
 import utils.ReaderTSV;
 
 /*
  * Questão 1 - Quais foram as hashtags mais usadas pela manhã, tarde e noite?
  */
 
-public class HashTagByDateHour {
+public class DateHour {
 
 	public static class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable> {
 
@@ -31,14 +31,8 @@ public class HashTagByDateHour {
 			
 			ReaderTSV readerTSV = new ReaderTSV(value.toString());
 			Tweet tweet = new Tweet();
-			tweet.setContent(readerTSV.getColumnContent());
 			tweet.setCreatedAt(readerTSV.getColumnCreatedAt());
-			
-			ArrayList<String> hashTags = tweet.getHashTagsFromContentByDateHour();
-			
-			for (String hashTag : hashTags) {
-				context.write(new Text(hashTag), new IntWritable(1));
-			}
+			context.write(new Text(tweet.getDateHour()), new IntWritable(1));
 		}
 	}
 
@@ -63,7 +57,7 @@ public class HashTagByDateHour {
 		
 		Configuration conf = new Configuration();
 	    Job job = Job.getInstance(conf, "Tarefa4Hadoop");
-	    job.setJarByClass(HashTagByDateHour.class);
+	    job.setJarByClass(DateHour.class);
 	    job.setMapperClass(TokenizerMapper.class);
 	    job.setCombinerClass(IntSumReducer.class);
 	    job.setReducerClass(IntSumReducer.class);

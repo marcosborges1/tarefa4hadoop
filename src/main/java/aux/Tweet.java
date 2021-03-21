@@ -1,6 +1,6 @@
-package app;
+package aux;
 
-import java.text.DateFormat;
+import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,40 +9,14 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
+import utils.Text;
+
 public class Tweet {
 
-	private String id;
 	private String content;
 	private String createdAt;
 	private String createdAtStr;
 	
-	public Tweet() {
-		//Constructor
-	}
-	
-	public Tweet(String id, String content, String createdAt) {
-
-		this.id = id;
-		this.content = content.trim();
-		this.createdAt = createdAt;
-
-	}
-	
-	public Tweet(String content, String createdAtStr) {
-
-		this.content = content.trim();
-		this.createdAtStr = createdAtStr;
-
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public String getContent() {
 		return content;
 	}
@@ -66,22 +40,10 @@ public class Tweet {
 	public void setCreatedAtStr(String createdAtStr) {
 		this.createdAtStr = createdAtStr;
 	}
-
-	public ArrayList<String> getHashTagsFromContent(){
-		ArrayList<String> tokens = new ArrayList<String>();
-		StringTokenizer itr = new StringTokenizer(this.getContent());
-		while (itr.hasMoreTokens()) {
-			String token = itr.nextToken();
-			if(token.startsWith("#")) {
-				tokens.add(token);
-			}
-		}
-		return tokens;
-	}
 	
 	public ArrayList<String> getHashTagsFromContentByPeriod() {
 		ArrayList<String> tokens = new ArrayList<String>();
-		StringTokenizer itr = new StringTokenizer(this.getContent());
+		StringTokenizer itr = new StringTokenizer(this.getContent().toLowerCase());
 		while (itr.hasMoreTokens()) {
 			String token = itr.nextToken();
 			if(token.startsWith("#") && token.length() >= 2 && !token.subSequence(1, 2).equals("#")) {
@@ -94,7 +56,7 @@ public class Tweet {
 	
 	public ArrayList<String> getHashTagsFromContentByDateHour() {
 		ArrayList<String> tokens = new ArrayList<String>();
-		StringTokenizer itr = new StringTokenizer(this.getContent());
+		StringTokenizer itr = new StringTokenizer(this.getContent().toLowerCase());
 		while (itr.hasMoreTokens()) {
 			String token = itr.nextToken();
 			if(token.startsWith("#") && token.length() >= 2 && !token.subSequence(1, 2).equals("#")) {
@@ -108,7 +70,7 @@ public class Tweet {
 	public String getDateHour() {
 		
 		try {
-			String dateHour = "\t";
+			String dateHour = "";
 			Date date = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH).parse(this.getCreatedAt());
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(date);
@@ -154,10 +116,10 @@ public class Tweet {
 	
 	public ArrayList<String> getHashTagsFromContentByDay() {
 		ArrayList<String> tokens = new ArrayList<String>();
-		StringTokenizer itr = new StringTokenizer(this.getContent());
+		StringTokenizer itr = new StringTokenizer(this.getContent().toLowerCase());
 		while (itr.hasMoreTokens()) {
 			String token = itr.nextToken();
-			if(token.startsWith("#")) {
+			if(token.startsWith("#") && token.length() >= 2 && !token.subSequence(1, 2).equals("#")) {
 				//Concate token + period. I.e: #massa|morning
 				tokens.add(token+"\t"+this.getCreatedAtStr());
 			}
@@ -167,19 +129,38 @@ public class Tweet {
 	
 	public ArrayList<String> getSentencesByWord(String word) {
 		
-		ArrayList<String> tokens = new ArrayList<String>();
-		StringTokenizer itr = new StringTokenizer(this.getContent());
-		while (itr.hasMoreTokens()) {
-			String token = itr.nextToken();
-			if(token.toLowerCase().equals(word.toLowerCase())) {
-				//Concate token + period. I.e: #massa|morning
-				tokens.add(token);
-			}
+		String wordNoAccent = Normalizer.normalize(word, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+		ArrayList<String> sentences = new ArrayList<String>();
+		//Acentuação | Sem acentuação
+		if(this.getContent().toLowerCase().contains(word.toLowerCase()) || this.getContent().toLowerCase().contains(wordNoAccent.toLowerCase())) {
+			String content = Text.clearContent(this.getContent().toLowerCase());
+			String[] words = content.split("\\s+");
+			sentences = this.conbinatedSentences2(sentences,words);
+			sentences = this.conbinatedSentences3(sentences,words);
+			sentences = this.conbinatedSentences4(sentences,words);
 		}
-		
-		return tokens;
-		
+		return sentences;
 	}
-
+	
+	public ArrayList<String> conbinatedSentences2(ArrayList<String> tokens, String[] words) {
+		for(int i = 0; i < words.length - 1; i++) {
+			tokens.add(words[i] + " " + words[i+1] + "\t2");
+		}
+		return tokens;
+	}
+	public ArrayList<String> conbinatedSentences3(ArrayList<String> tokens, String[] words) {
+		for(int i = 0; i < words.length - 2; i++) {
+			tokens.add(words[i] + " " + words[i+1] + " " + words[i+2] + "\t3");
+		}
+		return tokens;
+	}
+	public ArrayList<String> conbinatedSentences4(ArrayList<String> tokens, String[] words) {
+		for(int i = 0; i < words.length - 3; i++) {
+			tokens.add(words[i] + " " + words[i+1] + " " + words[i+2] + " " + words[i+3] + "\t4");
+		}
+		return tokens;
+	}
+	
+	
 	
 }
