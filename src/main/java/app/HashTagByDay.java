@@ -21,7 +21,7 @@ import aux.Tweet;
 import utils.ReaderTSV;
 
 /*
- * Questão 2 - Quais as hashtags mais usadas em cada dia?
+ * Questão 2.b - Quais as hashtags mais usadas em cada dia?
  */
 public class HashTagByDay {
 

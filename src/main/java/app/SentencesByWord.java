@@ -21,7 +21,7 @@ import aux.Tweet;
 import utils.ReaderTSV;
 
 /*
- * Questão 1 - Quais foram as hashtags mais usadas pela manhã, tarde e noite?
+ * Questão 2.d/e
  */
 
 public class SentencesByWord {
