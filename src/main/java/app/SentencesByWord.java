@@ -61,6 +61,7 @@ public class SentencesByWord {
 		FileUtils.deleteDirectory(new File(args[1]));
 		
 		Configuration conf = new Configuration();
+//		conf.set("fs.hdfs.impl", "org.apache.hadoop.hdfs.DistributedFileSystem");
 	    Job job = Job.getInstance(conf, "Tarefa4Hadoop");
 	    job.setJarByClass(HashTagByDay.class);
 	    job.setMapperClass(TokenizerMapper.class);

@@ -56,6 +56,7 @@ public class DateHour {
 		FileUtils.deleteDirectory(new File(args[1]));
 		
 		Configuration conf = new Configuration();
+//		conf.set("fs.hdfs.impl", "org.apache.hadoop.hdfs.DistributedFileSystem");
 	    Job job = Job.getInstance(conf, "Tarefa4Hadoop");
 	    job.setJarByClass(DateHour.class);
 	    job.setMapperClass(TokenizerMapper.class);

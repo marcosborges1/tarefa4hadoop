@@ -63,7 +63,8 @@ public class HashTagByPeriod {
 		FileUtils.deleteDirectory(new File(args[1]));
 		
 		Configuration conf = new Configuration();
-	    Job job = Job.getInstance(conf, "Tarefa4Hadoop");
+//		conf.set("fs.hdfs.impl", "org.apache.hadoop.hdfs.DistributedFileSystem");
+		Job job = Job.getInstance(conf, "Tarefa4Hadoop");
 	    job.setJarByClass(HashTagByPeriod.class);
 	    job.setMapperClass(TokenizerMapper.class);
 	    job.setCombinerClass(IntSumReducer.class);
